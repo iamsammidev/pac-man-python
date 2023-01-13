@@ -58,9 +58,9 @@ def draw_player():
     elif direction == 1:
         screen.blit(pygame.transform.flip(player_images[counter // 5], True, False), (player_x, player_y))
     elif direction == 2:
-        screen.blit(pygame.transform.flip(player_images[counter // 5], 90), (player_x, player_y))
+        screen.blit(pygame.transform.rotate(player_images[counter // 5], 90), (player_x, player_y))
     elif direction == 3:
-        screen.blit(pygame.transform.flip(player_images[counter // 5], 270), (player_x, player_y))
+        screen.blit(pygame.transform.rotate(player_images[counter // 5], 270), (player_x, player_y))
 
 
 run = True
