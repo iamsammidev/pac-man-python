@@ -105,7 +105,9 @@ class Ghost:
         num2 = (WIDTH // 30)
         num3 = 15
         self.turns = [False, False, False, False]
-        if self.center_x // 30 < 29:
+        if 0 < self.center_x // 30 < 29:
+            if level[(self.center_y - num3)//num1][self.center_x//num2] == 9:
+                self.turns[2] = True
             if (level[self.center_y // num1][(self.center_x - num3) // num2] < 3 \
                     or level[self.center_y // num1][(self.center_x - num3) // num2] == 9 and
                     (self.in_box or self.dead)):
@@ -489,7 +491,7 @@ def get_targets(blink_x, blink_y, ink_x, ink_y, pink_x, pink_y, clyd_x, clyd_y):
             clyd_target = return_target
     else:
         if not blinky_dead:
-            if 340 < blink_x < 560 and 380 < blink_y < 500:
+            if 340 < blink_x < 560 and 340 < blink_y < 500:
                 blink_target = (400, 100)
             else:
                 blink_target = (player_x, player_y)
@@ -497,7 +499,7 @@ def get_targets(blink_x, blink_y, ink_x, ink_y, pink_x, pink_y, clyd_x, clyd_y):
             blink_target = return_target
 
         if not inky_dead:
-            if 340 < ink_x < 560 and 380 < ink_y < 500:
+            if 340 < ink_x < 560 and 340 < ink_y < 500:
                 ink_target = (400, 100)
             else:
                 ink_target = (player_x, player_y)
@@ -505,7 +507,7 @@ def get_targets(blink_x, blink_y, ink_x, ink_y, pink_x, pink_y, clyd_x, clyd_y):
             ink_target = return_target
 
         if not pinky_dead:
-            if 340 < pink_x < 560 and 380 < pink_y < 500:
+            if 340 < pink_x < 560 and 340 < pink_y < 500:
                 pink_target = (400, 100)
             else:
                 pink_target = (player_x, player_y)
@@ -513,7 +515,7 @@ def get_targets(blink_x, blink_y, ink_x, ink_y, pink_x, pink_y, clyd_x, clyd_y):
             pink_target = return_target
 
         if not clyde_dead:
-            if 340 < clyd_x < 560 and 380 < clyd_y < 500:
+            if 340 < clyd_x < 560 and 340 < clyd_y < 500:
                 clyd_target = (400, 100)
             else:
                 clyd_target = (player_x, player_y)
@@ -609,7 +611,6 @@ while run:
     pygame.display.flip()
 pygame.quit()
 
-# get ghosts moving through ghost door
 # lose a life and reset on collision with ghost
 # eat ghost and send running back to cage if powerup
 # create 3 extra movement algorithms
