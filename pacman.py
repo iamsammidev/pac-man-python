@@ -1,4 +1,5 @@
 # Build Pac-Man from Scratch in Python with PyGame!!
+import copy
 from board import boards
 import pygame
 import math
@@ -11,7 +12,7 @@ screen = pygame.display.set_mode([WIDTH, HEIGHT])
 timer = pygame.time.Clock()
 fps = 60
 font = pygame.font.Font('freesansbold.ttf', 20)
-level = boards
+level =copy.deepcopy(boards)
 color = 'blue'
 PI = math.pi
 player_images = []
@@ -68,9 +69,10 @@ pinky_box = False
 clyde_box = False
 moving = False
 ghost_speeds = [2, 2, 2, 2]
-
 startup_counter = 0
 lives = 3
+game_over = False
+game_won = False
 
 
 class Ghost:
@@ -688,6 +690,16 @@ def draw_misc():
         pygame.draw.circle(screen, 'blue', (140, 930), 15)
     for i in range(lives):
         screen.blit(pygame.transform.scale(player_images[0], (30, 30)), (650 + i * 40, 915))
+    if game_over:
+        pygame.draw.rect(screen, 'white', [50, 200, 800, 300], 0, 10)
+        pygame.draw.rect(screen, 'dark gray', [70, 220, 760, 260], 0, 10)
+        gameover_text = font.render('Game over! Space bar to restart', True, 'red')
+        screen.blit(gameover_text, (100, 300))
+    if game_won:
+        pygame.draw.rect(screen, 'white', [50, 200, 800, 300], 0, 10)
+        pygame.draw.rect(screen, 'dark gray', [70, 220, 760, 260], 0, 10)
+        gameover_text = font.render('Victory! Space bar to restart', True, ' green')
+        screen.blit(gameover_text, (100, 300))
 
 
 def check_collisions(score, power, power_counter, eaten_ghosts):
@@ -923,7 +935,7 @@ while run:
         power_counter = 0
         powerup = False
         eaten_ghost = [False, False, False, False]
-    if startup_counter < 180:
+    if startup_counter < 180 and not game_over and not game_won:
         moving = False
         startup_counter += 1
     else:
@@ -954,6 +966,11 @@ while run:
         ghost_speeds[2] = 4
     if clyde_dead:
         ghost_speeds[3] = 4
+
+    game_won = True
+    for i in range(len(level)):
+        if 1 in level[i] or 2 in level[i]:
+            game_won = False
 
     player_circle = pygame.draw.circle(screen, 'black', (center_x, center_y), 20, 2)
     draw_player()
@@ -1022,6 +1039,10 @@ while run:
                 inky_dead = False
                 pinky_dead = False
                 clyde_dead = False
+            else:
+                game_over = True
+                moving = False
+                startup_counter = 0
     if powerup and player_circle.colliderect(blinky.rect) and eaten_ghost[0] and not blinky.dead:
         if lives > 0:
             powerup = False
@@ -1054,6 +1075,10 @@ while run:
             inky_dead = False
             pinky_dead = False
             clyde_dead = False
+        else:
+            game_over = True
+            moving = False
+            startup_counter = 0
 
     if powerup and player_circle.colliderect(inky.rect) and eaten_ghost[1] and not inky.dead:
         if lives > 0:
@@ -1087,7 +1112,10 @@ while run:
             inky_dead = False
             pinky_dead = False
             clyde_dead = False
-
+        else:
+            game_over = True
+            moving = False
+            startup_counter = 0
     if powerup and player_circle.colliderect(pinky.rect) and eaten_ghost[2] and not pinky.dead:
         if lives > 0:
             powerup = False
@@ -1120,7 +1148,10 @@ while run:
             inky_dead = False
             pinky_dead = False
             clyde_dead = False
-
+        else:
+            game_over = True
+            moving = False
+            startup_counter = 0
     if powerup and player_circle.colliderect(clyde.rect) and eaten_ghost[3] and not clyde.dead:
         if lives > 0:
             powerup = False
@@ -1153,7 +1184,10 @@ while run:
             inky_dead = False
             pinky_dead = False
             clyde_dead = False
-
+        else:
+            game_over = True
+            moving = False
+            startup_counter = 0
     if powerup and player_circle.colliderect(blinky.rect) and not blinky_dead and not eaten_ghost[0]:
         blinky_dead = True
         eaten_ghost[0] = True
@@ -1183,6 +1217,42 @@ while run:
                 direction_command = 2
             if event.key == pygame.K_DOWN:
                 direction_command = 3
+            if event.key == pygame.K_SPACE and (game_over or game_won):
+                powerup = False
+                power_counter = 0
+                lives -= 1
+                startup_counter = 0
+                player_x = 450
+                player_y = 663
+                direction = 0
+                direction_command = 0
+
+                blinky_x = 56
+                blinky_y = 58
+                blinky_direction = 0
+
+                inky_x = 440
+                inky_y = 388
+                inky_direction = 2
+
+                pinky_x = 440
+                pinky_y = 438
+                pinky_direction = 2
+
+                clyde_x = 440
+                clyde_y = 438
+                clyde_direction = 2
+
+                eaten_ghost = [False, False, False, False]
+                blinky_dead = False
+                inky_dead = False
+                pinky_dead = False
+                clyde_dead = False
+                score = 0
+                lives = 3
+                level = copy.deepcopy(boards)
+                game_over = False
+                game_won = False
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_RIGHT and direction_command == 0:
