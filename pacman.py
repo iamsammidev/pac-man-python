@@ -41,7 +41,7 @@ inky_direction = 2
 
 pinky_x = 440
 pinky_y = 438
-pinky_direction = 2
+pinky_direction = 1
 
 clyde_x = 440
 clyde_y = 438
@@ -865,8 +865,8 @@ def get_targets(blink_x, blink_y, ink_x, ink_y, pink_x, pink_y, clyd_x, clyd_y):
         else:
             ink_target = return_target
 
-        if not pinky_dead:
-            pink_target = (player_x, runaway_y)
+        if not pinky_dead and not eaten_ghost[2]:
+            pink_target = (runaway_x, runaway_y)
         elif not pinky.dead and eaten_ghost[2]:
             if 340 < pink_x < 560 and 340 < pink_y < 500:
                 pink_target = (400, 100)
@@ -989,19 +989,27 @@ while run:
     turns_allowed = check_position(center_x, center_y)
     if moving:
         player_x, player_y = move_player(player_x, player_y)
-        if not blinky_dead and not blinky_box:
+
+        if not blinky_dead and not blinky.in_box:
             blinky_x, blinky_y, blinky_direction = blinky.move_blinky()
         else:
             blinky_x, blinky_y, blinky_direction = blinky.move_clyde()
-        if not pinky_dead and not pinky_box:
+
+        if not pinky_dead and not pinky.in_box:
             pinky_x, pinky_y, pinky_direction = pinky.move_pinky()
         else:
             pinky_x, pinky_y, pinky_direction = pinky.move_clyde()
-        if not inky_dead and not inky_box:
+
+        if not inky_dead and not inky.in_box:
             inky_x, inky_y, inky_direction = inky.move_inky()
         else:
             inky_x, inky_y, inky_direction = inky.move_clyde()
-        clyde_x, clyde_y, clyde_direction = clyde.move_clyde()
+
+        if not clyde_dead and not clyde.in_box:
+            clyde_x, clyde_y, clyde_direction = clyde.move_clyde()
+        else:
+            clyde_x, clyde_y, clyde_direction = clyde.move_clyde()
+        # pinky_x, pinky_y, pinky_direction = pinky.move_clyde()
     score, powerup, power_count, eaten_ghost = check_collisions(score, powerup, power_counter, eaten_ghost)
     # add to if not powerup to check if eaten ghosts
     if not powerup:
@@ -1079,7 +1087,6 @@ while run:
             game_over = True
             moving = False
             startup_counter = 0
-
     if powerup and player_circle.colliderect(inky.rect) and eaten_ghost[1] and not inky.dead:
         if lives > 0:
             powerup = False
@@ -1188,6 +1195,7 @@ while run:
             game_over = True
             moving = False
             startup_counter = 0
+
     if powerup and player_circle.colliderect(blinky.rect) and not blinky_dead and not eaten_ghost[0]:
         blinky_dead = True
         eaten_ghost[0] = True
