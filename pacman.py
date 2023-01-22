@@ -778,15 +778,19 @@ while run:
     if powerup and player_circle.colliderect(blinky.rect) and not blinky_dead and not eaten_ghost[0]:
         blinky_dead = True
         eaten_ghost[0] = True
+        score += (2 ** eaten_ghost.count(True)) * 100
     if powerup and player_circle.colliderect(inky.rect) and not inky_dead and not eaten_ghost[1]:
         inky_dead = True
         eaten_ghost[1] = True
+        score += (2 ** eaten_ghost.count(True)) * 100
     if powerup and player_circle.colliderect(pinky.rect) and not pinky_dead and not eaten_ghost[2]:
         pinky_dead = True
         eaten_ghost[2] = True
+        score += (2 ** eaten_ghost.count(True)) * 100
     if powerup and player_circle.colliderect(clyde.rect) and not clyde_dead and not eaten_ghost[3]:
         clyde_dead = True
         eaten_ghost[3] = True
+        score += (2 ** eaten_ghost.count(True)) * 100
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -837,7 +841,5 @@ while run:
     pygame.display.flip()
 pygame.quit()
 
-# lose a life and reset on collision with ghost
-# eat ghost and send running back to cage if powerup
 # create 3 extra movement algorithms
 # sound effects, restart and winning messages
