@@ -11,8 +11,8 @@ HEIGHT = 950
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
 timer = pygame.time.Clock()
 fps = 60
-font = pygame.font.Font('freesansbold.ttf', 20)
-level =copy.deepcopy(boards)
+font = pygame.font.Font('fonts/VT323-Regular.ttf', 20)
+level = copy.deepcopy(boards)
 color = 'blue'
 PI = math.pi
 player_images = []
@@ -26,6 +26,15 @@ inky_img = pygame.transform.scale(pygame.image.load(f'assets/ghost_images/blue.p
 clyde_img = pygame.transform.scale(pygame.image.load(f'assets/ghost_images/orange.png'), (45, 45))
 spooked_img = pygame.transform.scale(pygame.image.load(f'assets/ghost_images/powerup.png'), (45, 45))
 dead_img = pygame.transform.scale(pygame.image.load(f'assets/ghost_images/dead.png'), (45, 45))
+# audio
+music_level_bg = pygame.mixer.Sound('audio/pacman_beginning.wav')
+music_pacman_chomp = pygame.mixer.Sound('audio/effects/pacman_chomp.wav')
+music_pacman_death = pygame.mixer.Sound('audio/effects/pacman_death.wav')
+music_pacman_eatghost = pygame.mixer.Sound('audio/effects/pacman_eatghost.wav')
+music_play_death_sound = True
+
+
+
 
 player_x = 450
 player_y = 663
@@ -108,7 +117,7 @@ class Ghost:
         num3 = 15
         self.turns = [False, False, False, False]
         if 0 < self.center_x // 30 < 29:
-            if level[(self.center_y - num3)//num1][self.center_x//num2] == 9:
+            if level[(self.center_y - num3) // num1][self.center_x // num2] == 9:
                 self.turns[2] = True
             if (level[self.center_y // num1][(self.center_x - num3) // num2] < 3 \
                     or level[self.center_y // num1][(self.center_x - num3) // num2] == 9 and
@@ -691,15 +700,17 @@ def draw_misc():
     for i in range(lives):
         screen.blit(pygame.transform.scale(player_images[0], (30, 30)), (650 + i * 40, 915))
     if game_over:
-        pygame.draw.rect(screen, 'white', [50, 200, 800, 300], 0, 10)
-        pygame.draw.rect(screen, 'dark gray', [70, 220, 760, 260], 0, 10)
+        pygame.draw.rect(screen, 'white', [250, 350, 400, 250], 0, 10)
+        pygame.draw.rect(screen, 'dark gray', [255, 355, 390, 240], 0, 10)
         gameover_text = font.render('Game over! Space bar to restart', True, 'red')
-        screen.blit(gameover_text, (100, 300))
+        text_rect = gameover_text.get_rect(center=screen.get_rect().center)
+        screen.blit(gameover_text, text_rect)
     if game_won:
-        pygame.draw.rect(screen, 'white', [50, 200, 800, 300], 0, 10)
-        pygame.draw.rect(screen, 'dark gray', [70, 220, 760, 260], 0, 10)
+        pygame.draw.rect(screen, 'white', [250, 350, 400, 250], 0, 10)
+        pygame.draw.rect(screen, 'dark gray', [255, 355, 390, 240], 0, 10)
         gameover_text = font.render('Victory! Space bar to restart', True, ' green')
-        screen.blit(gameover_text, (100, 300))
+        text_rect = gameover_text.get_rect(center=screen.get_rect().center)
+        screen.blit(gameover_text, text_rect)
 
 
 def check_collisions(score, power, power_counter, eaten_ghosts):
@@ -708,9 +719,11 @@ def check_collisions(score, power, power_counter, eaten_ghosts):
     if 0 < player_x < 870:
         if level[center_y // num1][center_x // num2] == 1:
             level[center_y // num1][center_x // num2] = 0
+            music_pacman_chomp.play()
             score += 10
         if level[center_y // num1][center_x // num2] == 2:
             level[center_y // num1][center_x // num2] = 0
+            music_pacman_chomp.play()
             score += 50
             power = True
             power_counter = 0
@@ -920,6 +933,8 @@ def get_targets(blink_x, blink_y, ink_x, ink_y, pink_x, pink_y, clyd_x, clyd_y):
 
 
 run = True
+music_level_bg.play()
+
 while run:
     timer.tick(fps)
     if counter < 19:
@@ -975,7 +990,8 @@ while run:
     player_circle = pygame.draw.circle(screen, 'black', (center_x, center_y), 20, 2)
     draw_player()
 
-    blinky = Ghost(blinky_x, blinky_y, targets[0], ghost_speeds[0], blinky_img, blinky_direction, blinky_dead, blinky_box, 0)
+    blinky = Ghost(blinky_x, blinky_y, targets[0], ghost_speeds[0], blinky_img, blinky_direction, blinky_dead,
+                   blinky_box, 0)
 
     inky = Ghost(inky_x, inky_y, targets[1], ghost_speeds[1], inky_img, inky_direction, inky_dead, inky_box, 1)
 
@@ -1195,22 +1211,29 @@ while run:
             game_over = True
             moving = False
             startup_counter = 0
+    if music_play_death_sound and game_over:
+        music_pacman_death.play(loops=1)
+        music_play_death_sound=False
 
     if powerup and player_circle.colliderect(blinky.rect) and not blinky_dead and not eaten_ghost[0]:
         blinky_dead = True
         eaten_ghost[0] = True
+        music_pacman_eatghost.play()
         score += (2 ** eaten_ghost.count(True)) * 100
     if powerup and player_circle.colliderect(inky.rect) and not inky_dead and not eaten_ghost[1]:
         inky_dead = True
         eaten_ghost[1] = True
+        music_pacman_eatghost.play()
         score += (2 ** eaten_ghost.count(True)) * 100
     if powerup and player_circle.colliderect(pinky.rect) and not pinky_dead and not eaten_ghost[2]:
         pinky_dead = True
         eaten_ghost[2] = True
+        music_pacman_eatghost.play()
         score += (2 ** eaten_ghost.count(True)) * 100
     if powerup and player_circle.colliderect(clyde.rect) and not clyde_dead and not eaten_ghost[3]:
         clyde_dead = True
         eaten_ghost[3] = True
+        music_pacman_eatghost.play()
         score += (2 ** eaten_ghost.count(True)) * 100
 
     for event in pygame.event.get():
@@ -1297,6 +1320,3 @@ while run:
 
     pygame.display.flip()
 pygame.quit()
-
-
-# sound effects, restart and winning messages
