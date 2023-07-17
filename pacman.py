@@ -28,7 +28,7 @@ spooked_img = pygame.transform.scale(pygame.image.load(f'assets/ghost_images/pow
 dead_img = pygame.transform.scale(pygame.image.load(f'assets/ghost_images/dead.png'), (45, 45))
 # audio
 music_level_bg = pygame.mixer.Sound('audio/pacman_beginning.wav')
-music_pacman_chomp = pygame.mixer.Sound('audio/effects/pacman_chomp.wav')
+music_pacman_chomp = pygame.mixer.Sound('audio/effects/chomp.mp3')
 music_pacman_death = pygame.mixer.Sound('audio/effects/pacman_death.wav')
 music_pacman_eatghost = pygame.mixer.Sound('audio/effects/pacman_eatghost.wav')
 music_play_death_sound = True
